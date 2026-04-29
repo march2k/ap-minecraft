@@ -11,20 +11,28 @@ is not actually a "camera" in openGL and everything is moved to mimic the effect
 
 public class Camera {
     private Window window;
+
+    // Vertical field of vision of this camera
     private float fov;
 
-    // height of near plane (how close to something can you get before clipping)
+    // Height of near plane (how close to something can you get before clipping)
     private final float near = 0.1f;
 
-    // height of far plane (what is the render distance)
+    // Height of far plane (what is the render distance)
     private final float far = 100f;
 
+    // Position of this camera in the world
     private float x, y, z;
+
+    // Rotation of this camera in the world
     private float yaw, pitch;
 
+    // Upper and lower limits to looking up and down. This prevents breaking your
+    // neck and avoids gimbal lock from extreme values messing up matrix math.
     private static final float pitchMax = 89;
     private static final float pitchMin = -89;
 
+    // Width and height of the viewport this camera is responsible for
     private int width;
     private int height;
 
@@ -53,8 +61,13 @@ public class Camera {
         // build the projection matrix
         glMatrixMode(GL_PROJECTION);
 
+        // Reset the projection matrix to the default
         glLoadIdentity();
+
+        // Set the viewport (how much of the window will we use)
         glViewport(0, 0, width, height);
+
+        // Create the perspective projection
         glFrustum(left, right, bottom, top, near, far);
 
         // time to apply camera transformations and rotation!!!!!
@@ -77,13 +90,20 @@ public class Camera {
         // if it is used for movement
         Vector3 forward = new Vector3();
 
+        // Convert yaw and pitch (stored in degrees as floats) to radians, because Math trig
+        // functions operate in radians. We have pitch and yaw offsets so that callers of this
+        // method may negate one of those axes (for example, only getting the forward direction
+        // horizontally) and subtract 90 because it normally gives the direction to the right.
         float yawRad = (float)Math.toRadians(yaw - (90 + yawOffset));
         float pitchRad = (float)Math.toRadians(pitch - pitchOffset);
 
+        // Do trig to convert the yaw and pitch to a 3d vector
         forward.x = (float)(Math.cos(yawRad) * Math.cos(pitchRad));
         forward.y = (float)Math.sin(pitchRad);
         forward.z = (float)(Math.sin(yawRad) * Math.cos(pitchRad));
 
+        // Normalize this vector so that it has a magnitude of 1 to make sure that using it
+        // to move something does not cause unintended behavior
         forward.normalize();
         return forward;
     }

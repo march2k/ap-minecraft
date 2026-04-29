@@ -1,9 +1,4 @@
-import org.lwjgl.opengl.GL;
-
-import java.nio.DoubleBuffer;
-
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL11.*;
 
 /*
 Game.java - Thomas
@@ -14,15 +9,22 @@ It basically is responsible for coordinating all the other classes actions.
  */
 
 public class Game implements Application {
+    // Game window
     private Window window;
+
+    // Perspective camera to see the world
     private Camera camera;
+
     private Block block;
     private Block block2;
 
     @Override
     public void start() {
+        // Create the window and a camera for the window
         window = new Window(1024, 768);
         camera = new Camera(window, 60);
+
+        // Give it an initial position and angle
         camera.setPosition(-2, 2, 4);
         camera.setAngle(25, -15);
 
@@ -32,15 +34,23 @@ public class Game implements Application {
 
     @Override
     public void loop() {
+        // Run this code until we need to close the window
         while(window.isOpen()) {
+            // Clear the screen with this color
             window.clear(0.5, 0.2, 0.8);
+
+            // Calculate the new projection matrix based on the camera's position
+            // and its rotation. Expensive, but it needs to be done every frame
             camera.calculate();
 
             block.draw(2, 0, 0);
             block2.draw(1, 0, 0);
+
+            // Run controls checks for moving the camera
             controls();
 
-            window.update(); // test
+            // Update the window with everything we have done so far
+            window.update();
         }
     }
 

@@ -9,7 +9,10 @@ as being responsible for placing itself in the requested coordinates.
  */
 
 public class Block {
+    // Texture used for the sides and bottom of the block
     private Texture side;
+
+    // Texture used for only the top of the block
     private Texture top;
 
     public Block(String sidePath, String topPath) {

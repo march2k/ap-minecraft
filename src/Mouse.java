@@ -14,10 +14,20 @@ keeping track of the mouse sensitivity.
  */
 
 public class Mouse {
+    // Mouse sensitivity when moving the camera
     private static float sensitivity = 0.1f;
+
+    // DoubleBuffers used to read the x and y position of the mouse
+    // from LWJGL, since it is internally a C function we need these
     private DoubleBuffer xp, yp;
+
+    // The position of the mouse last frame
     private double lastX, lastY;
+
+    // The actual deltas in X and Y of the mouse position
     private float dx, dy;
+
+    // Handle to the window that we are bound to
     private long handle;
 
     public Mouse(long handle) {
@@ -27,20 +37,22 @@ public class Mouse {
     }
 
     public void update() {
+        // Get current cursor position to the buffers
         glfwGetCursorPos(handle, xp, yp);
 
+        // Grab the data into variables to actually use it
         float curX = (float)xp.get();
         float curY = (float)yp.get();
 
-        xp.rewind();
-        yp.rewind();
-
+        // Calculate deltas based on last frame's positions
         dx = curX - (float) lastX;
         dy = curY - (float) lastY;
 
-        lastX = xp.get();
-        lastY = yp.get();
+        // Update our memory of last frame's positions with this frame
+        lastX = curX;
+        lastY = curY;
 
+        // Reset the buffers for the next frame to avoid overflow
         xp.clear();
         yp.clear();
     }
