@@ -25,7 +25,7 @@ public class Game implements Application {
 
             triangle.draw();
 
-            window.update();
+            window.update(); // test
         }
     }
 
