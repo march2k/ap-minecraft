@@ -17,6 +17,8 @@ public class Window {
         glfwSwapInterval(1);
         GL.createCapabilities();
 
+        glEnable(GL_TEXTURE_2D);
+
         width = w;
         height = h;
 
