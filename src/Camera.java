@@ -98,6 +98,12 @@ public class Camera {
         this.z = z;
     }
 
+    public void setPosition(Vector3 p) {
+        this.x = p.x;
+        this.y = p.y;
+        this.z = p.y;
+    }
+
     public void translate(float x, float y, float z) {
         this.x += x;
         this.y += y;
@@ -123,16 +129,8 @@ public class Camera {
         return x;
     }
 
-    public float getY() {
-        return y;
-    }
-
-    public float getZ() {
-        return z;
-    }
-
-    public float getYaw() {
-        return yaw;
+    public Vector3 getPosition() {
+        return new Vector3(x, y, z);
     }
 
     public float getPitch() {
