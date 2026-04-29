@@ -6,15 +6,16 @@ import static org.lwjgl.opengl.GL11.*;
 public class Game implements Application {
     private Window window;
     private Camera camera;
-    private TestTriangle triangle;
+    private Block block;
 
     @Override
     public void start() {
         window = new Window(1024, 768);
         camera = new Camera(window, 45);
-        camera.setPosition(0.5f, 0.5f, 5);
+        camera.setPosition(-2, 2, 4);
+        camera.setAngle(25, -15);
 
-        triangle = new TestTriangle();
+        block = new Block("/side.png", "/top.png");
     }
 
     @Override
@@ -23,7 +24,7 @@ public class Game implements Application {
             window.clear(0.5, 0.2, 0.8);
             camera.calculate();
 
-            triangle.draw();
+            block.draw();
 
             window.update(); // test
         }

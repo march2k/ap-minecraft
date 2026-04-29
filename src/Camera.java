@@ -51,7 +51,7 @@ public class Camera {
 
         // rotate first so that we rotate around the camera's position and not
         // a world coordinate (caused by moving first. this is backwards and stupid)
-        glRotatef(pitch, 1, 0, 0);
+        glRotatef(-pitch, 1, 0, 0);
         glRotatef(yaw, 0, 1, 0);
 
         // translate the opposite of the camera position. this is because opengl does

@@ -6,7 +6,7 @@ public class TestTriangle {
 
     public TestTriangle()
     {
-        texture = new Texture("/tuffturtle.png");
+        texture = new Texture("/top.png");
     }
 
     public void draw() {
@@ -21,13 +21,14 @@ public class TestTriangle {
         glBegin(GL_TRIANGLES);
 
         glTexCoord2f(0,0);
-        glVertex3f(0, 0, 1);
+        glVertex3f(0, 0, 0);
         glTexCoord2f(0,1);
         glVertex3f(0, 1, 0);
         glTexCoord2f(1,1);
-        glVertex3f(2, 1, 0);
+        glVertex3f(1, 1, 0);
 
         glEnd();
+        glBindTexture(GL_TEXTURE_2D, 0);
         glPopMatrix();
     }
 }
