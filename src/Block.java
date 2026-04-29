@@ -55,6 +55,16 @@ public class Block {
         glTexCoord2f(0, 1);
         glVertex3f(-0.5f, 0.5f, 0.5f); // top left
 
+        // bottom face
+        glTexCoord2f(0, 0);
+        glVertex3f(-0.5f, -0.5f, -0.5f); // bottom left
+        glTexCoord2f(1, 0);
+        glVertex3f(0.5f, -0.5f, -0.5f); // bottom right
+        glTexCoord2f(1, 1);
+        glVertex3f(0.5f, -0.5f, 0.5f); // top right
+        glTexCoord2f(0, 1);
+        glVertex3f(-0.5f, -0.5f, 0.5f); // top left
+
         glEnd();
 
         top.use();
@@ -69,16 +79,6 @@ public class Block {
         glVertex3f(0.5f, 0.5f, 0.5f); // top right
         glTexCoord2f(0, 1);
         glVertex3f(-0.5f, 0.5f, 0.5f); // top left
-
-        // bottom face
-        glTexCoord2f(0, 0);
-        glVertex3f(-0.5f, -0.5f, -0.5f); // bottom left
-        glTexCoord2f(1, 0);
-        glVertex3f(0.5f, -0.5f, -0.5f); // bottom right
-        glTexCoord2f(1, 1);
-        glVertex3f(0.5f, -0.5f, 0.5f); // top right
-        glTexCoord2f(0, 1);
-        glVertex3f(-0.5f, -0.5f, 0.5f); // top left
 
         glEnd();
         glPopMatrix();

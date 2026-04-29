@@ -13,6 +13,9 @@ public class Camera {
     private float x, y, z;
     private float yaw, pitch;
 
+    private static final float pitchMax = 89;
+    private static final float pitchMin = -89;
+
     private int width;
     private int height;
 
@@ -59,6 +62,27 @@ public class Camera {
         glTranslatef(-x, -y, -z);
     }
 
+    public Vector3 getDirection(float yawOffset, float pitchOffset) {
+        // converts the pitch and yaw of this camera into a vector that represents
+        // the direction the camera is facing and normalizes it so that it does not scale
+        // if it is used for movement
+        Vector3 forward = new Vector3();
+
+        float yawRad = (float)Math.toRadians(yaw - (90 + yawOffset));
+        float pitchRad = (float)Math.toRadians(pitch - pitchOffset);
+
+        forward.x = (float)(Math.cos(yawRad) * Math.cos(pitchRad));
+        forward.y = (float)Math.sin(pitchRad);
+        forward.z = (float)(Math.sin(yawRad) * Math.cos(pitchRad));
+
+        forward.normalize();
+        return forward;
+    }
+
+    public Vector3 getDirection() {
+        return getDirection(0, 0);
+    }
+
     public void setPosition(float x, float y, float z) {
         this.x = x;
         this.y = y;
@@ -71,14 +95,19 @@ public class Camera {
         this.z += z;
     }
 
+    public void translate(Vector3 amount) {
+        translate(amount.x, amount.y, amount.z);
+    }
+
     public void setAngle(float y, float p) {
         yaw = y;
-        pitch = p;
+        pitch = Math.clamp(p, Camera.pitchMin, Camera.pitchMax);
     }
 
     public void rotate(float y, float p) {
         this.yaw += y;
         this.pitch += p;
+        pitch = Math.clamp(pitch, Camera.pitchMin, Camera.pitchMax);
     }
 
     public float getX() {

@@ -9,12 +9,20 @@ public class Window {
     private int height;
 
     private Keyboard keyboard;
+    private Mouse mouse;
 
     public Window(int w, int h) {
         glfwInit();
+
         handle = glfwCreateWindow(w, h, "cccc", 0L, 0L);
         glfwMakeContextCurrent(handle);
+        glfwSetInputMode(handle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         glfwSwapInterval(1);
+
+        if(glfwRawMouseMotionSupported()) {
+            glfwSetInputMode(handle, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+        }
+
         GL.createCapabilities();
 
         glEnable(GL_TEXTURE_2D);
@@ -24,6 +32,7 @@ public class Window {
         height = h;
 
         keyboard = new Keyboard(handle);
+        mouse = new Mouse(handle);
     }
 
     public boolean isOpen() {
@@ -38,10 +47,23 @@ public class Window {
     public void update() {
         glfwPollEvents();
         glfwSwapBuffers(handle);
+        mouse.update();
+    }
+
+    public void close() {
+        glfwSetWindowShouldClose(handle, true);
     }
 
     public boolean getKey(int key) {
         return keyboard.getKey(key);
+    }
+
+    public float getDeltaX() {
+        return mouse.getDeltaX();
+    }
+
+    public float getDeltaY() {
+        return mouse.getDeltaY();
     }
 
     public int getWidth() {
