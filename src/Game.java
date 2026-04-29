@@ -9,6 +9,7 @@ public class Game implements Application {
     private Window window;
     private Camera camera;
     private Block block;
+    private Block block2;
 
     @Override
     public void start() {
@@ -18,6 +19,7 @@ public class Game implements Application {
         camera.setAngle(25, -15);
 
         block = new Block("/dirt.png", "/grass.png");
+        block2 = new Block("/cobblestone.png", "/cobblestone.png");
     }
 
     @Override
@@ -26,7 +28,8 @@ public class Game implements Application {
             window.clear(0.5, 0.2, 0.8);
             camera.calculate();
 
-            block.draw();
+            block.draw(2, 0, 0);
+            block2.draw(1, 0, 0);
             controls();
 
             window.update(); // test

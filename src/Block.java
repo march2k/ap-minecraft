@@ -9,8 +9,10 @@ public class Block {
         top = new Texture(topPath);
     }
 
-    public void draw() {
+    public void draw(float x, float y, float z) {
         glPushMatrix();
+
+        glTranslatef(x, y, z);
 
         side.use();
         glBegin(GL_QUADS);
