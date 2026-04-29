@@ -4,6 +4,15 @@ import java.nio.DoubleBuffer;
 
 import static org.lwjgl.glfw.GLFW.*;
 
+/*
+Mouse.java - Thomas
+
+The Mouse class is used internally by the Window to keep track of delta mouse movement,
+which is the amount that the mouse position has changed since the last frame. This kind
+of data is especially useful for the first person camera. It also is responsible for
+keeping track of the mouse sensitivity.
+ */
+
 public class Mouse {
     private static float sensitivity = 0.1f;
     private DoubleBuffer xp, yp;

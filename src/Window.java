@@ -3,6 +3,15 @@ import org.lwjgl.opengl.GL;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 
+/*
+Window.java - Thomas
+
+The Window class represents a GLFW window and its handle, and all of its properties like
+width, height, and keyboard/mouse data. I suppose a limitation is that it does not keep
+track of its current title. The Window is responsible for keeping track of the Keyboard
+and Mouse data that it generates and providing it to calling methods.
+ */
+
 public class Window {
     private long handle;
     private int width;

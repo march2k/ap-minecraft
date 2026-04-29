@@ -1,5 +1,14 @@
 import static org.lwjgl.opengl.GL11.*;
 
+/*
+Camera.java - Thomas
+
+This class Camera implements a 3D perspective camera using some matrix math and glFrustum.
+It also sets the glViewport (which changes what portion of the screen is used for drawing) and
+translates and rotates the world to fit the camera's rotation and position. This is because there
+is not actually a "camera" in openGL and everything is moved to mimic the effect.
+ */
+
 public class Camera {
     private Window window;
     private float fov;

@@ -5,6 +5,14 @@ import java.nio.DoubleBuffer;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 
+/*
+Game.java - Thomas
+
+This is the main class of the game, it handles communication between different components
+of the game, for example telling the camera to move when the window reports a key is pressed.
+It basically is responsible for coordinating all the other classes actions.
+ */
+
 public class Game implements Application {
     private Window window;
     private Camera camera;

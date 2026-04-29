@@ -1,3 +1,11 @@
+/*
+Vector3.java - Thomas
+
+The Vector3 class is basically a math helper, it is used primarily for calculating the
+direction vector of the camera, storing it, and scaling it. It basically just has some
+helping methods like vector normalization
+ */
+
 public class Vector3 {
     public float x, y, z;
 

@@ -8,6 +8,12 @@ import java.nio.IntBuffer;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.stb.STBImage.*;
 
+/*
+Texture.java - Cooper
+
+
+ */
+
 public class Texture
 {
     private int width;
