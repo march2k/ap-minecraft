@@ -1,4 +1,7 @@
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL;
+
+import java.nio.IntBuffer;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
@@ -14,8 +17,12 @@ and Mouse data that it generates and providing it to calling methods.
 
 public class Window {
     private long handle;
+
     private int width;
     private int height;
+
+    private int framebufferWidth;
+    private int framebufferHeight;
 
     private Keyboard keyboard;
     private Mouse mouse;
@@ -27,6 +34,12 @@ public class Window {
         glfwMakeContextCurrent(handle);
         glfwSetInputMode(handle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         glfwSwapInterval(1);
+
+        IntBuffer widthBuffer = BufferUtils.createIntBuffer(1);
+        IntBuffer heightBuffer = BufferUtils.createIntBuffer(1);
+        glfwGetFramebufferSize(handle, widthBuffer, heightBuffer);
+        framebufferWidth = widthBuffer.get();
+        framebufferHeight = heightBuffer.get();
 
         if(glfwRawMouseMotionSupported()) {
             glfwSetInputMode(handle, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
@@ -81,6 +94,14 @@ public class Window {
 
     public int getHeight() {
         return height;
+    }
+
+    public int getFramebufferWidth() {
+        return framebufferWidth;
+    }
+
+    public int getFramebufferHeight() {
+        return framebufferHeight;
     }
 
     public void destroy() {

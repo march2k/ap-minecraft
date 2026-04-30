@@ -1,4 +1,5 @@
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.glfw.GLFW.*;
 
 /*
 Camera.java - Thomas
@@ -36,11 +37,19 @@ public class Camera {
     private int width;
     private int height;
 
+    // Framebuffer dimensions for making the viewport work on high DPI screens
+    private int framebufferWidth;
+    private int framebufferHeight;
+
     public Camera(Window win, float myFov) {
         window = win;
+        fov = myFov;
+
         width = window.getWidth();
         height = window.getHeight();
-        fov = myFov;
+
+        framebufferWidth = window.getFramebufferWidth();
+        framebufferHeight = window.getFramebufferHeight();
     }
 
     public void calculate() {
@@ -65,7 +74,7 @@ public class Camera {
         glLoadIdentity();
 
         // Set the viewport (how much of the window will we use)
-        glViewport(0, 0, width, height);
+        glViewport(0, 0, framebufferWidth, framebufferHeight);
 
         // Create the perspective projection
         glFrustum(left, right, bottom, top, near, far);
