@@ -27,7 +27,7 @@ public class Game implements Application {
         camera.setPosition(-2, 2, 4);
         camera.setAngle(25, -15);
 
-        world = new World(10, 10, 10);
+        world = new World(new WorldGeneratorFlat(),10, 10, 10);
     }
 
     @Override

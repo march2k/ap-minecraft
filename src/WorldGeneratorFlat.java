@@ -1,0 +1,16 @@
+public class WorldGeneratorFlat implements WorldGenerator
+{
+
+    @Override
+    public void generate(Block[][][] world, int maxX, int maxY, int maxZ)
+    {
+        for(int x = 0; x < maxX; x++)
+        {
+            for(int z = 0; z < maxZ; z++)
+            {
+                world[x][0][z] = new Block("/cobblestone.png", "/cobblestone.png");
+                world[x][1][z] = new Block("/dirt.png", "/grass.png");
+            }
+        }
+    }
+}
