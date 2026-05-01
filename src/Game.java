@@ -15,8 +15,7 @@ public class Game implements Application {
     // Perspective camera to see the world
     private Camera camera;
 
-    private Block block;
-    private Block block2;
+    private World world;
 
     @Override
     public void start() {
@@ -28,8 +27,7 @@ public class Game implements Application {
         camera.setPosition(-2, 2, 4);
         camera.setAngle(25, -15);
 
-        block = new Block("/dirt.png", "/grass.png");
-        block2 = new Block("/cobblestone.png", "/cobblestone.png");
+        world = new World(10, 10, 10);
     }
 
     @Override
@@ -43,8 +41,7 @@ public class Game implements Application {
             // and its rotation. Expensive, but it needs to be done every frame
             camera.calculate();
 
-            block.draw(2, 0, 0);
-            block2.draw(1, 0, 0);
+            world.draw();
 
             // Run controls checks for moving the camera
             controls();
