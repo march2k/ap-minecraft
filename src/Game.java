@@ -32,7 +32,7 @@ public class Game implements Application {
         camera.setAngle(25, -15);
 
         world = new World(new WorldGeneratorFlat(),10, 10, 10);
-        player = new Player(world, camera, new Vector3(5.5f, 5, 5.5f));
+        player = new Player(camera, world, new Vector3(5.5f, 7, 5.5f));
     }
 
     @Override
@@ -47,8 +47,6 @@ public class Game implements Application {
             camera.calculate();
 
             world.draw();
-
-            // Update the player
             player.update();
 
             // Run controls checks for moving the camera
@@ -60,43 +58,28 @@ public class Game implements Application {
     }
 
     private void controls() {
-        // camera controls for moving
-        if(window.getKey(GLFW_KEY_W)) {
-            // move forward
-            player.accelerate(camera.getDirection(0, camera.getPitch()).scl(0.003f));
-        }
-        if(window.getKey(GLFW_KEY_S)) {
-            // move forward
-            player.accelerate(camera.getDirection(0, camera.getPitch()).scl(-0.003f));
-        }
-        if(window.getKey(GLFW_KEY_D)) {
-            // move forward
-            player.accelerate(camera.getDirection(90, camera.getPitch()).scl(-0.003f));
-        }
-        if(window.getKey(GLFW_KEY_A)) {
-            // move forward
-            player.accelerate(camera.getDirection(-90, camera.getPitch()).scl(-0.003f));
-        }
-        if(window.getKey(GLFW_KEY_SPACE)) {
-            if(player.isOnGround()) {
-                player.accelerate(new Vector3(0, 0.02f, 0));
-            }
-        }
-
         // camera controls for looking around
         float dx = window.getDeltaX();
         float dy = window.getDeltaY();
         float sens = Mouse.getSensitivity();
         camera.rotate(dx * sens, -dy * sens);
 
+        if(window.getKey(GLFW_KEY_W)) {
+            player.accelerate(camera.getDirection(0, camera.getPitch()).scl(0.005f));
+        }
+        if(window.getKey(GLFW_KEY_S)) {
+            player.accelerate(camera.getDirection(0, camera.getPitch()).scl(-0.005f));
+        }
+        if(window.getKey(GLFW_KEY_A)) {
+            player.accelerate(camera.getDirection(90, camera.getPitch()).scl(0.005f));
+        }
+        if(window.getKey(GLFW_KEY_D)) {
+            player.accelerate(camera.getDirection(-90, camera.getPitch()).scl(0.005f));
+        }
+
         // escape to exit game
         if(window.getKey(GLFW_KEY_ESCAPE)) {
             window.close();
-        }
-
-        if(window.getKey(GLFW_KEY_R)) {
-            player.setPosition(new Vector3(5.5f, 5, 5.5f));
-            player.resetVelocity();
         }
     }
 

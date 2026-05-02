@@ -26,8 +26,8 @@ public class Block {
 
     // Create and return a new CollisionBody representing this block in 3D space
     public CollisionBody createBody() {
-        return new CollisionBody(new Vector3(position.x - 0.5f, position.y - 0.5f, position.z - 0.5f),
-                new Vector3(1, 1, 1));
+        return new CollisionBody(new Vector3(position),
+                new Vector3(position.x + 1, position.y + 1, position.z + 1));
     }
 
     public void draw() {
@@ -35,7 +35,8 @@ public class Block {
         glPushMatrix();
 
         // translate to put this block into the requested position
-        glTranslatef(position.x, position.y, position.z);
+        // Adding 0.5f to make it match CollisionBodies of the blocks
+        glTranslatef(position.x + 0.5f, position.y + 0.5f, position.z + 0.5f);
 
         // start drawing with the side texture
         side.use();
@@ -111,5 +112,9 @@ public class Block {
 
         // load the previously saved matrix back over the current one
         glPopMatrix();
+    }
+
+    public Vector3 getPosition() {
+        return position;
     }
 }

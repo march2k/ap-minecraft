@@ -1,11 +1,22 @@
 import static org.lwjgl.opengl.GL11.*;
 
 public class CollisionBody {
-    private Vector3 min, max;
+    public Vector3 min;
+    public Vector3 max;
 
-    public CollisionBody(Vector3 pos, Vector3 size) {
-        min = new Vector3(pos);
-        max = new Vector3(pos).add(size);
+    public CollisionBody(Vector3 n, Vector3 x) {
+        min = new Vector3(n);
+        max = new Vector3(x);
+    }
+
+    public CollisionBody(CollisionBody other) {
+        min = new Vector3(other.min);
+        max = new Vector3(other.max);
+    }
+
+    public CollisionBody() {
+        min = new Vector3();
+        max = new Vector3();
     }
 
     public boolean intersects(CollisionBody other) {
@@ -14,17 +25,10 @@ public class CollisionBody {
                 min.z < other.max.z && max.z > other.min.z;
     }
 
-    public void setPosition(Vector3 pos) {
-        Vector3 size = new Vector3(max.x - min.x, max.y - min.y, max.z - min.z);
-        min = new Vector3(pos);
-        max = new Vector3(pos).add(size);
-    }
-
-    public Vector3 getMin() {
-        return min;
-    }
-
-    public Vector3 getMax() {
-        return max;
+    public String toString() {
+        String s = new String();
+        s += "min: " + min + "\n";
+        s += "max: " + max + "\n";
+        return s;
     }
 }

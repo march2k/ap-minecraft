@@ -23,6 +23,14 @@ public class World
         return world[_x][_y][_z];
     }
 
+    public CollisionBody getBodyForBlock(int x, int y, int z) {
+        Block block = getBlock(x, y, z);
+        if(block != null) {
+            return block.createBody();
+        }
+        return new CollisionBody();
+    }
+
     public void draw()
     {
         for(int x = 0; x < maxX; x++)

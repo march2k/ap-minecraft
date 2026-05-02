@@ -1,146 +1,131 @@
 import java.util.ArrayList;
 
 public class Player {
-    // The camera that this player will occupy
     private Camera camera;
-
-    // The world that this player is in
     private World world;
 
-    // The CollisionBody responsible for this player's collisions
-    private CollisionBody body;
-
-    // The CollisionBody responsible for checking X and Z collisions
-    // I have this because I do not want floors or ceilings considered when doing those checks
-    private CollisionBody smaller;
-
-    // Player CollisionBody measurements
-    private static final float width = 0.75f;
-    private static final float height = 1.75f;
-    private static final float depth = 0.75f;
-
-    // Amount to buffer collision checks by (reduce test hitbox by this much in order to
-    // avoid testing collision with unwanted walls, ceilings, etc)
-    private static final float buffer = 0.1f;
-
-    // Position and velocity of this player
     private Vector3 position;
     private Vector3 velocity;
 
-    // Physical properties of the player
-    private boolean onGround;
+    private CollisionBody body;
+    private Vector3 size;
+
+    private static final float buffer = 0.01f;
+    private static final float gravity = -0.001f;
     private static final float friction = 0.92f;
-    private static final float gravity = 0.001f;
+    private boolean onGround;
 
-    public Player(World world, Camera cam, Vector3 spawnLocation) {
-        // Spawn in the player at the requested position and initialize velocity
-        setPosition(spawnLocation);
+    public Player(Camera cam, World w, Vector3 initialPosition) {
+        camera = cam;
+        world = w;
+
+        position = new Vector3(initialPosition);
         velocity = new Vector3();
+        size = new Vector3(0.75f, 1.75f, 0.75f);
 
-        // Keep our camera and world for use later
-        this.camera = cam;
-        this.world = world;
-
-        // Create our player's CollisionBody
-        body = new CollisionBody(position, new Vector3(width, height, depth));
+        body = new CollisionBody();
+        updateBody();
     }
 
     public void update() {
-        // Slave the camera to this player at head level
-        camera.setPosition(new Vector3(position).add(new Vector3(0.5f, height, 0.5f)));
+        camera.setPosition(new Vector3(position.x, position.y + size.y, position.z));
 
-        // Rebuild the collision body for the current position since it might have moved
-        recalculateCollisionBody();
+        // create a CollisionBody to use for collisions
+        updateBody();
 
-        // Try to move based on the current velocity
+        // Try to move and collide
         move();
 
-        // Apply gravity
+        // Apply gravity if we are in the air
         if(!onGround) {
-            velocity.y -= gravity;
+            velocity.y -= 0.001f;
         }
 
-        // Apply friction
-        if(onGround) {
-
-        }
         velocity.x *= friction;
         velocity.z *= friction;
-
-        System.out.println(getPosition() + " onGround: " + onGround);
     }
 
     private void move() {
-        ArrayList<CollisionBody> nearby = getNearbyBlockCollisionBodies();
+        ArrayList<CollisionBody> bodies = getBlockBodies();
 
         position.x += velocity.x;
-        recalculateCollisionBody();
-        for(CollisionBody b: nearby) {
-            if(smaller.intersects(b)) {
-                System.out.println("X collided with block: " + velocity.x);
-                if(velocity.x > 0) {
-                    position.x = b.getMin().x - width - buffer;
-                } else if(velocity.x < 0) {
-                    position.x = b.getMax().x;
+        updateBody();
+
+        for (CollisionBody b : bodies) {
+            if (b.intersects(this.body)) {
+                System.out.println("X collision @ " + position.x + " velocity: " + velocity.x);
+                if (velocity.x > 0) {
+                    position.x = b.min.x - (size.x / 2) - 0.001f;
+                } else if (velocity.x < 0) {
+                    position.x = b.max.x + (size.x / 2) + 0.001f;
                 }
+                System.out.println("New X coordinate: " + position.x);
                 velocity.x = 0;
+                updateBody();
             }
         }
 
         position.y += velocity.y;
-        recalculateCollisionBody();
-        for(CollisionBody b: nearby) {
-            if(body.intersects(b)) {
+        updateBody();
+
+        for(CollisionBody b: bodies) {
+            if(b.intersects(body)) {
+                System.out.println("Y collision @ " + position.y + " velocity: " + velocity.y);
                 if(velocity.y > 0) {
-                    position.y = b.getMin().y - height;
+                    position.y = b.min.y - size.y;
                 } else if(velocity.y < 0) {
-                    position.y = b.getMax().y;
+                    position.y = b.max.y;
                 }
+                System.out.println("New Y coordinate: " + position.y);
                 velocity.y = 0;
+                updateBody();
             }
         }
 
         position.z += velocity.z;
-        recalculateCollisionBody();
-        for(CollisionBody b: nearby) {
-            if(smaller.intersects(b)) {
-                System.out.println("Z collided with block: " + velocity.z);
-                if(velocity.z > 0) {
-                    position.z = b.getMin().z - depth - buffer;
-                } else if(velocity.z < 0) {
-                    position.z = b.getMax().z;
+        updateBody();
+
+        for (CollisionBody b : bodies) {
+            if (b.intersects(this.body)) {
+                System.out.println("Z collision @ " + position.z + " velocity: " + velocity.z);
+                if (velocity.z > 0) {
+                    position.z = b.min.z - (size.z / 2) - 0.001f;
+                } else if (velocity.z < 0) {
+                    position.z = b.max.z + (size.z / 2) + 0.001f;
                 }
+                System.out.println("New Z coordinate: " + position.z);
                 velocity.z = 0;
+                updateBody();
             }
         }
 
-        recalculateCollisionBody();
-        onGround = checkOnGround(nearby);
+        onGround = checkOnGround(bodies);
     }
 
-    private boolean checkOnGround(ArrayList<CollisionBody> nearby) {
-        CollisionBody tester = new CollisionBody(new Vector3(position.x, position.y - buffer, position.z),
-                new Vector3(width - buffer, height, depth - buffer));
+    private boolean checkOnGround(ArrayList<CollisionBody> bodies) {
+        updateBody();
+        CollisionBody tester = new CollisionBody(body);
+        tester.min.y -= buffer;
 
-        for(CollisionBody b: nearby) {
-            if(tester.intersects(b)) {
+        for(CollisionBody b: bodies) {
+            if(b.intersects(tester)) {
                 return true;
             }
         }
+
         return false;
     }
 
-    private ArrayList<CollisionBody> getNearbyBlockCollisionBodies() {
+    private ArrayList<CollisionBody> getBlockBodies() {
         ArrayList<CollisionBody> bodies = new ArrayList<>();
-
         int x = (int)Math.ceil(position.x);
         int y = (int)Math.ceil(position.y);
         int z = (int)Math.ceil(position.z);
 
-        for(int addY = y-1; addY <= x+2; addY++) {
-            for(int addX = y-1; addX <= x+2; addX++) {
-                for(int addZ = y-1; addZ <= x+2; addZ++) {
-                    bodies.add(getBodyAt(addX, addY, addZ));
+        for(int addX = x - 2; addX <= x + 2; addX++) {
+            for(int addY = y - 1; addY <= y + 2; addY++) {
+                for(int addZ = z - 2; addZ <= z + 2; addZ++) {
+                    bodies.add(world.getBodyForBlock(addX, addY, addZ));
                 }
             }
         }
@@ -148,40 +133,21 @@ public class Player {
         return bodies;
     }
 
-    private void recalculateCollisionBody() {
-        body = new CollisionBody(new Vector3(position).add(new Vector3(width / 2.0f, 0, depth / 2.0f)),
-                new Vector3(width, height, depth));
+    private void updateBody() {
+        /*body.min.x = position.x - (size.x / 2);
+        body.min.y = position.y;
+        body.min.z = position.z - (size.z / 2);
+        body.max.x = position.x + (size.x / 2);
+        body.max.y = position.y + size.y;
+        body.max.z = position.z + (size.z / 2);*/
 
-        // make this box smaller to avoid checking against floors and ceilings
-        smaller = new CollisionBody(new Vector3(position.x, position.y + buffer, position.z),
-                new Vector3(width, height - (buffer * 2), depth));
-    }
-
-    private CollisionBody getBodyAt(float x, float y, float z) {
-        Block block = world.getBlock((int)x, (int)y, (int)z);
-        if(block != null) {
-            return block.createBody();
-        }
-        return new CollisionBody(new Vector3(), new Vector3());
-    }
-
-    public boolean isOnGround() {
-        return onGround;
+        float halfWidth = size.x / 2;
+        float halfDepth = size.z / 2;
+        body.min = new Vector3(position.x - halfWidth, position.y, position.z - halfDepth);
+        body.max = new Vector3(position.x + halfWidth, position.y + size.y, position.z + halfDepth);
     }
 
     public void accelerate(Vector3 direction) {
         velocity.add(direction);
-    }
-
-    public void setPosition(Vector3 pos) {
-        position = new Vector3(pos);
-    }
-
-    public void resetVelocity() {
-        velocity = new Vector3();
-    }
-
-    public Vector3 getPosition() {
-        return position;
     }
 }

@@ -53,6 +53,13 @@ public class Vector3 {
         return this;
     }
 
+    public Vector3 set(Vector3 other) {
+        x = other.x;
+        y = other.y;
+        z = other.z;
+        return this;
+    }
+
     public boolean equals(Vector3 other) {
         if(x != other.x) {
             return false;

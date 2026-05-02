@@ -11,12 +11,12 @@ public class WorldGeneratorFlat implements WorldGenerator
                 world[x][0][z] = new Block(new Vector3(x, 0, z),
                         "/cobblestone.png", "/cobblestone.png");
                 world[x][1][z] = new Block(new Vector3(x, 1, z),
-                        "/dirt.png", "/grass.png");
+                        "/dirt.png", "/top.png");
             }
         }
 
         // Adding a test wall
-        world[2][2][2] = new Block(new Vector3(2, 2,2),
+        world[3][2][3] = new Block(new Vector3(3, 2,3),
                 "/dirt.png", "/grass.png");
     }
 }
