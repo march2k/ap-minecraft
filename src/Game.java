@@ -76,6 +76,11 @@ public class Game implements Application {
         if(window.getKey(GLFW_KEY_D)) {
             player.accelerate(camera.getDirection(-90, camera.getPitch()).scl(0.005f));
         }
+        if(window.getKey(GLFW_KEY_SPACE)) {
+            if(player.isOnGround()) {
+                player.accelerate(new Vector3(0, 0.08f, 0));
+            }
+        }
 
         // escape to exit game
         if(window.getKey(GLFW_KEY_ESCAPE)) {

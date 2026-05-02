@@ -48,23 +48,6 @@ public class Player {
     private void move() {
         ArrayList<CollisionBody> bodies = getBlockBodies();
 
-        position.x += velocity.x;
-        updateBody();
-
-        for (CollisionBody b : bodies) {
-            if (b.intersects(this.body)) {
-                System.out.println("X collision @ " + position.x + " velocity: " + velocity.x);
-                if (velocity.x > 0) {
-                    position.x = b.min.x - (size.x / 2) - 0.001f;
-                } else if (velocity.x < 0) {
-                    position.x = b.max.x + (size.x / 2) + 0.001f;
-                }
-                System.out.println("New X coordinate: " + position.x);
-                velocity.x = 0;
-                updateBody();
-            }
-        }
-
         position.y += velocity.y;
         updateBody();
 
@@ -78,6 +61,23 @@ public class Player {
                 }
                 System.out.println("New Y coordinate: " + position.y);
                 velocity.y = 0;
+                updateBody();
+            }
+        }
+
+        position.x += velocity.x;
+        updateBody();
+
+        for (CollisionBody b : bodies) {
+            if (b.intersects(this.body)) {
+                System.out.println("X collision @ " + position.x + " velocity: " + velocity.x);
+                if (velocity.x > 0) {
+                    position.x = b.min.x - (size.x / 2) - 0.001f;
+                } else if (velocity.x < 0) {
+                    position.x = b.max.x + (size.x / 2) + 0.001f;
+                }
+                System.out.println("New X coordinate: " + position.x);
+                velocity.x = 0;
                 updateBody();
             }
         }
@@ -149,5 +149,9 @@ public class Player {
 
     public void accelerate(Vector3 direction) {
         velocity.add(direction);
+    }
+
+    public boolean isOnGround() {
+        return onGround;
     }
 }
