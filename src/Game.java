@@ -24,7 +24,7 @@ public class Game implements Application {
     @Override
     public void start() {
         // Create the window and a camera for the window
-        window = new Window(1920, 1080);
+        window = new Window(1280, 720);
         camera = new Camera(window, 75);
 
         // Give it an initial position and angle
