@@ -14,6 +14,15 @@ public class World
         worldGenerator.generate(world, maxX, maxY, maxZ);
     }
 
+    public Block getBlock(int x, int y, int z) {
+        // Thomas making a few edits here to stop ArrayIndexOutOfBounds
+        int _x = Math.clamp(x, 0, maxX-1);
+        int _y = Math.clamp(y, 0, maxY-1);
+        int _z = Math.clamp(z, 0, maxZ-1);
+
+        return world[_x][_y][_z];
+    }
+
     public void draw()
     {
         for(int x = 0; x < maxX; x++)
@@ -25,7 +34,7 @@ public class World
                     Block b = world[x][y][z];
                     if(b != null)
                     {
-                        b.draw(x, y, z);
+                        b.draw();
                     }
                 }
             }

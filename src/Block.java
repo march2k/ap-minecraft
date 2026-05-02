@@ -3,9 +3,9 @@ import static org.lwjgl.opengl.GL11.*;
 /*
 Block.java - Thomas
 
-The Block class represents a single minecraft block somewhere in the world. It keeps track
-of how to draw itself and the textures and coordinates that it needs to do that, as well
-as being responsible for placing itself in the requested coordinates.
+The Block class represents a single block somewhere in the world. It keeps track
+of how to draw itself and the textures and coordinates that it needs to do that,
+as well as being responsible for placing itself in the requested coordinates.
  */
 
 public class Block {
@@ -15,17 +15,27 @@ public class Block {
     // Texture used for only the top of the block
     private Texture top;
 
-    public Block(String sidePath, String topPath) {
+    // Position of this block in 3D space
+    private Vector3 position;
+
+    public Block(Vector3 pos, String sidePath, String topPath) {
+        position = new Vector3(pos);
         side = new Texture(sidePath);
         top = new Texture(topPath);
     }
 
-    public void draw(float x, float y, float z) {
+    // Create and return a new CollisionBody representing this block in 3D space
+    public CollisionBody createBody() {
+        return new CollisionBody(new Vector3(position.x - 0.5f, position.y - 0.5f, position.z - 0.5f),
+                new Vector3(1, 1, 1));
+    }
+
+    public void draw() {
         // save current matrix since we will modify it
         glPushMatrix();
 
         // translate to put this block into the requested position
-        glTranslatef(x, y, z);
+        glTranslatef(position.x, position.y, position.z);
 
         // start drawing with the side texture
         side.use();

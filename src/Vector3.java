@@ -21,6 +21,12 @@ public class Vector3 {
         this.z = z;
     }
 
+    public Vector3(Vector3 other) {
+        this.x = other.x;
+        this.y = other.y;
+        this.z = other.z;
+    }
+
     public Vector3 normalize() {
         float length = (float)Math.sqrt((x*x) + (y*y) + (z*z));
 
@@ -38,6 +44,26 @@ public class Vector3 {
         y *= scalar;
         z *= scalar;
         return this;
+    }
+
+    public Vector3 add(Vector3 other) {
+        x += other.x;
+        y += other.y;
+        z += other.z;
+        return this;
+    }
+
+    public boolean equals(Vector3 other) {
+        if(x != other.x) {
+            return false;
+        }
+        if(y != other.y) {
+            return false;
+        }
+        if(z != other.z) {
+            return false;
+        }
+        return true;
     }
 
     @Override

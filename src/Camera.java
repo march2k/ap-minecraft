@@ -127,6 +127,12 @@ public class Camera {
         this.z = z;
     }
 
+    public void setPosition(Vector3 pos) {
+        this.x = pos.x;
+        this.y = pos.y;
+        this.z = pos.z;
+    }
+
     public void translate(float x, float y, float z) {
         this.x += x;
         this.y += y;

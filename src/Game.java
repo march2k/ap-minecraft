@@ -15,19 +15,24 @@ public class Game implements Application {
     // Perspective camera to see the world
     private Camera camera;
 
+    // Game world
     private World world;
+
+    // Player
+    private Player player;
 
     @Override
     public void start() {
         // Create the window and a camera for the window
-        window = new Window(1024, 768);
-        camera = new Camera(window, 60);
+        window = new Window(1920, 1080);
+        camera = new Camera(window, 75);
 
         // Give it an initial position and angle
         camera.setPosition(-2, 2, 4);
         camera.setAngle(25, -15);
 
         world = new World(new WorldGeneratorFlat(),10, 10, 10);
+        player = new Player(world, camera, new Vector3(5.5f, 5, 5.5f));
     }
 
     @Override
@@ -43,6 +48,9 @@ public class Game implements Application {
 
             world.draw();
 
+            // Update the player
+            player.update();
+
             // Run controls checks for moving the camera
             controls();
 
@@ -52,22 +60,27 @@ public class Game implements Application {
     }
 
     private void controls() {
-        // camera controls for moving (flight for now)
+        // camera controls for moving
         if(window.getKey(GLFW_KEY_W)) {
             // move forward
-            camera.translate(camera.getDirection().scl(0.05f));
+            player.accelerate(camera.getDirection(0, camera.getPitch()).scl(0.003f));
         }
         if(window.getKey(GLFW_KEY_S)) {
-            // move backwards (opposite of forwards)
-            camera.translate(camera.getDirection().scl(-0.05f));
-        }
-        if(window.getKey(GLFW_KEY_A)) {
-            // move left, remove pitch from calculation to prevent diagonal movement
-            camera.translate(camera.getDirection(90, camera.getPitch()).scl(0.05f));
+            // move forward
+            player.accelerate(camera.getDirection(0, camera.getPitch()).scl(-0.003f));
         }
         if(window.getKey(GLFW_KEY_D)) {
-            // move right, do the same as for the A key
-            camera.translate(camera.getDirection(-90, camera.getPitch()).scl(0.05f));
+            // move forward
+            player.accelerate(camera.getDirection(90, camera.getPitch()).scl(-0.003f));
+        }
+        if(window.getKey(GLFW_KEY_A)) {
+            // move forward
+            player.accelerate(camera.getDirection(-90, camera.getPitch()).scl(-0.003f));
+        }
+        if(window.getKey(GLFW_KEY_SPACE)) {
+            if(player.isOnGround()) {
+                player.accelerate(new Vector3(0, 0.02f, 0));
+            }
         }
 
         // camera controls for looking around
@@ -79,6 +92,11 @@ public class Game implements Application {
         // escape to exit game
         if(window.getKey(GLFW_KEY_ESCAPE)) {
             window.close();
+        }
+
+        if(window.getKey(GLFW_KEY_R)) {
+            player.setPosition(new Vector3(5.5f, 5, 5.5f));
+            player.resetVelocity();
         }
     }
 
