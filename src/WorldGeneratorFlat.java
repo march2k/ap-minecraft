@@ -18,5 +18,9 @@ public class WorldGeneratorFlat implements WorldGenerator
         // Adding a test wall
         world[3][2][3] = new Block(new Vector3(3, 2,3),
                 "/dirt.png", "/grass.png");
+        world[3][2][4] = new Block(new Vector3(3, 2,4),
+                "/dirt.png", "/grass.png");
+        world[3][3][4] = new Block(new Vector3(3, 3,4),
+                "/dirt.png", "/grass.png");
     }
 }

@@ -30,7 +30,8 @@ public class Window {
     public Window(int w, int h) {
         glfwInit();
 
-        handle = glfwCreateWindow(w, h, "cccc", 0L, 0L);
+        long monitor = glfwGetPrimaryMonitor();
+        handle = glfwCreateWindow(w, h, "cccc", monitor, 0L);
         glfwMakeContextCurrent(handle);
         glfwSetInputMode(handle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         glfwSwapInterval(1);

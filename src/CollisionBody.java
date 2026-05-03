@@ -19,6 +19,7 @@ public class CollisionBody {
         max = new Vector3();
     }
 
+    // Test if another CollisionBody intersects this one
     public boolean intersects(CollisionBody other) {
         return min.x < other.max.x && max.x > other.min.x &&
                 min.y < other.max.y && max.y > other.min.y &&

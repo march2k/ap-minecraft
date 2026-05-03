@@ -1,18 +1,30 @@
 import java.util.ArrayList;
 
 public class Player {
+    // Camera for us to see the world through
     private Camera camera;
+
+    // World for us to get nearby blocks for collisions
     private World world;
 
+    // Position and velocity of this player
     private Vector3 position;
     private Vector3 velocity;
 
+    // Our player's CollisionBody and its size
     private CollisionBody body;
     private Vector3 size;
 
+    // Constants used in collision detection and adjustments
     private static final float buffer = 0.01f;
-    private static final float gravity = -0.001f;
-    private static final float friction = 0.92f;
+    private static final float pixel = 0.001f;
+
+    // Physical properties about this player
+    private final float gravity = 0.2f;
+    private final float friction = 0.92f;
+    private final float speed = 0.5f;
+    private final float jumpPower = 0.06f;
+
     private boolean onGround;
 
     public Player(Camera cam, World w, Vector3 initialPosition) {
@@ -21,13 +33,17 @@ public class Player {
 
         position = new Vector3(initialPosition);
         velocity = new Vector3();
+
+        // Set the size of the player's collision box
         size = new Vector3(0.75f, 1.75f, 0.75f);
 
+        // Build the collision box for the first time
         body = new CollisionBody();
         updateBody();
     }
 
     public void update() {
+        // Place the camera at the player's eye
         camera.setPosition(new Vector3(position.x, position.y + size.y, position.z));
 
         // create a CollisionBody to use for collisions
@@ -38,45 +54,62 @@ public class Player {
 
         // Apply gravity if we are in the air
         if(!onGround) {
-            velocity.y -= 0.001f;
+            velocity.y -= gravity * Game.getDeltaTime();
         }
 
+        // Apply friction to slow down the player when they stop moving
         velocity.x *= friction;
         velocity.z *= friction;
     }
 
     private void move() {
+        // Get a list of all blocks relevant to collisions, for example the blocks
+        // above, below, in front of us should be in this list, because it is
+        // possible that we may collide with them this frame.
         ArrayList<CollisionBody> bodies = getBlockBodies();
 
+        // move the player based on their current velocity and update the CollisionBody
         position.y += velocity.y;
         updateBody();
 
+        // Check this newly moved collision body against all relevant blocks
         for(CollisionBody b: bodies) {
             if(b.intersects(body)) {
-                System.out.println("Y collision @ " + position.y + " velocity: " + velocity.y);
+                // Determine what side of the block we hit based on velocity
                 if(velocity.y > 0) {
+                    // If velocity was positive...
                     position.y = b.min.y - size.y;
                 } else if(velocity.y < 0) {
+                    // If velocity was negative...
                     position.y = b.max.y;
                 }
-                System.out.println("New Y coordinate: " + position.y);
+
+                // Set velocity to 0 now that we have been snapped to the
+                // end of the block & we can't move anymore
                 velocity.y = 0;
+
+                // Finalize this axis into the CollisionBody
                 updateBody();
             }
         }
 
+        // This axis (and the Z axis) work basically the same, just one difference
+        // in how they snap the player.
         position.x += velocity.x;
         updateBody();
 
         for (CollisionBody b : bodies) {
             if (b.intersects(this.body)) {
-                System.out.println("X collision @ " + position.x + " velocity: " + velocity.x);
                 if (velocity.x > 0) {
-                    position.x = b.min.x - (size.x / 2) - 0.001f;
+                    // Have to snap the player taking account for how the center of the
+                    // hitbox is actually the position of the player.
+                    position.x = b.min.x - (size.x / 2) - pixel;
                 } else if (velocity.x < 0) {
-                    position.x = b.max.x + (size.x / 2) + 0.001f;
+                    // we add the pixel constant here because if we are right on it, it is
+                    // possible that there can be floating point issues and besides I don't
+                    // trust having floats being set to precise values.
+                    position.x = b.max.x + (size.x / 2) + pixel;
                 }
-                System.out.println("New X coordinate: " + position.x);
                 velocity.x = 0;
                 updateBody();
             }
@@ -87,26 +120,30 @@ public class Player {
 
         for (CollisionBody b : bodies) {
             if (b.intersects(this.body)) {
-                System.out.println("Z collision @ " + position.z + " velocity: " + velocity.z);
                 if (velocity.z > 0) {
-                    position.z = b.min.z - (size.z / 2) - 0.001f;
+                    position.z = b.min.z - (size.z / 2) - pixel;
                 } else if (velocity.z < 0) {
-                    position.z = b.max.z + (size.z / 2) + 0.001f;
+                    position.z = b.max.z + (size.z / 2) + pixel;
                 }
-                System.out.println("New Z coordinate: " + position.z);
                 velocity.z = 0;
                 updateBody();
             }
         }
 
+        // Check and assign if we are on the ground or not
         onGround = checkOnGround(bodies);
     }
 
     private boolean checkOnGround(ArrayList<CollisionBody> bodies) {
+        // Make sure the CollisionBody is completely up to date
         updateBody();
+
+        // Create a new CollisionBody that is slightly moved downwards
         CollisionBody tester = new CollisionBody(body);
         tester.min.y -= buffer;
 
+        // If this tester CollisionBody was in the floor, then we know
+        // that we are on the ground, otherwise we are in the air.
         for(CollisionBody b: bodies) {
             if(b.intersects(tester)) {
                 return true;
@@ -117,6 +154,9 @@ public class Player {
     }
 
     private ArrayList<CollisionBody> getBlockBodies() {
+        // Get all the nearby blocks for our player's current block position and
+        // return their CollisionBodies in an ArrayList. We need this to make sure
+        // that we are checking all the blocks we might expect to block us.
         ArrayList<CollisionBody> bodies = new ArrayList<>();
         int x = (int)Math.ceil(position.x);
         int y = (int)Math.ceil(position.y);
@@ -134,13 +174,8 @@ public class Player {
     }
 
     private void updateBody() {
-        /*body.min.x = position.x - (size.x / 2);
-        body.min.y = position.y;
-        body.min.z = position.z - (size.z / 2);
-        body.max.x = position.x + (size.x / 2);
-        body.max.y = position.y + size.y;
-        body.max.z = position.z + (size.z / 2);*/
-
+        // Update the player's CollisionBody to match its current position. I suppose this method
+        // would also account for size changing... but that's not going to happen.
         float halfWidth = size.x / 2;
         float halfDepth = size.z / 2;
         body.min = new Vector3(position.x - halfWidth, position.y, position.z - halfDepth);
@@ -153,5 +188,21 @@ public class Player {
 
     public boolean isOnGround() {
         return onGround;
+    }
+
+    public float getGravity() {
+        return gravity;
+    }
+
+    public float getFriction() {
+        return friction;
+    }
+
+    public float getSpeed() {
+        return speed;
+    }
+
+    public float getJumpPower() {
+        return jumpPower;
     }
 }
