@@ -21,9 +21,9 @@ public class Player {
 
     // Physical properties about this player
     private final float gravity = 0.2f;
-    private final float friction = 0.92f;
-    private final float speed = 0.5f;
-    private final float jumpPower = 0.06f;
+    private final float friction = 0.80f;
+    private final float speed = 1.0f;
+    private final float jumpPower = 0.085f;
 
     private boolean onGround;
 
