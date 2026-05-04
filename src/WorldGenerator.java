@@ -1,4 +1,4 @@
 public interface WorldGenerator
 {
-    void generate(Block[][][] world, int maxX, int maxY, int maxZ);
+    void generate(World world, int maxX, int maxY, int maxZ);
 }

@@ -11,7 +11,7 @@ public class World
         maxZ = z;
         world = new Block[x][y][z];
         worldGenerator = gen;
-        worldGenerator.generate(world, maxX, maxY, maxZ);
+        worldGenerator.generate(this, maxX, maxY, maxZ);
     }
 
     public Block getBlock(int x, int y, int z) {
@@ -47,5 +47,25 @@ public class World
                 }
             }
         }
+    }
+
+    public int getMaxX()
+    {
+        return maxX;
+    }
+
+    public int getMaxY()
+    {
+        return maxY;
+    }
+
+    public int getMaxZ()
+    {
+        return maxZ;
+    }
+
+    public void set(int x, int y, int z, String side, String top)
+    {
+        world[x][y][z] = new Block(new Vector3(x, y, z), side, top);
     }
 }
