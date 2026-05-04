@@ -30,24 +30,36 @@ public class Window {
     public Window(int w, int h) {
         glfwInit();
 
+        // create a fullscreen window
         long monitor = glfwGetPrimaryMonitor();
         handle = glfwCreateWindow(w, h, "cccc", monitor, 0L);
+
+        // use this window as the opengl context
         glfwMakeContextCurrent(handle);
+
+        // lock the mouse into this window
         glfwSetInputMode(handle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+        // vsync
         glfwSwapInterval(1);
 
+        // get the framebuffer size because we need this to make sure that the glViewport
+        // is set properly for high DPI screens like 4k monitors or on Mac.
         IntBuffer widthBuffer = BufferUtils.createIntBuffer(1);
         IntBuffer heightBuffer = BufferUtils.createIntBuffer(1);
         glfwGetFramebufferSize(handle, widthBuffer, heightBuffer);
         framebufferWidth = widthBuffer.get();
         framebufferHeight = heightBuffer.get();
 
+        // use raw mouse input
         if(glfwRawMouseMotionSupported()) {
             glfwSetInputMode(handle, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
         }
 
+        // do this so that we can call opengl functions
         GL.createCapabilities();
 
+        // turn on depth and textures
         glEnable(GL_TEXTURE_2D);
         glEnable(GL_DEPTH_TEST);
 
