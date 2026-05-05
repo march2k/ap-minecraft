@@ -113,7 +113,7 @@ public class Game implements Application {
         // Basic stupid jump code
         if(window.getKey(GLFW_KEY_SPACE)) {
             if(player.isOnGround()) {
-                player.accelerate(new Vector3(0, player.getJumpPower(), 0));
+                player.accelerate(new Vector3(0, player.getJumpPower(), 0).scl(dt));
             }
         }
 

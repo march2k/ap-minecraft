@@ -23,7 +23,7 @@ public class Player {
     private final float gravity = 0.2f;
     private final float friction = 0.80f;
     private final float speed = 1.0f;
-    private final float jumpPower = 0.085f;
+    private final float jumpPower = 5.5f;
 
     private boolean onGround;
 
