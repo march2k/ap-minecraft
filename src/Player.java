@@ -24,6 +24,7 @@ public class Player {
     private final float friction = 0.80f;
     private final float speed = 1.0f;
     private final float jumpPower = 5.5f;
+    private final float eyePos = 1.75f;
 
     private boolean onGround;
 
@@ -35,7 +36,7 @@ public class Player {
         velocity = new Vector3();
 
         // Set the size of the player's collision box
-        size = new Vector3(0.75f, 1.75f, 0.75f);
+        size = new Vector3(0.75f, 1.9f, 0.75f);
 
         // Build the collision box for the first time
         body = new CollisionBody();
@@ -44,7 +45,7 @@ public class Player {
 
     public void update() {
         // Place the camera at the player's eye
-        camera.setPosition(new Vector3(position.x, position.y + size.y, position.z));
+        camera.setPosition(new Vector3(position.x, position.y + eyePos, position.z));
 
         // create a CollisionBody to use for collisions
         updateBody();
