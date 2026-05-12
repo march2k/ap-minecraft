@@ -20,6 +20,12 @@ public class Keyboard implements GLFWKeyCallbackI {
 
     @Override
     public void invoke(long win, int key, int sc, int action, int mods) {
+        // Avoid indexing a negative number when a key that is not recognized is pressed
+        // Think media control keys, brightness, volume buttons
+        if(key == -1) {
+            return;
+        }
+
         if(action == GLFW_PRESS) {
             keys[key] = true;
         }
