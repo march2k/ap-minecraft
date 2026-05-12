@@ -27,6 +27,8 @@ public class Game implements Application {
     // Player
     private Player player;
 
+    private Block testBlock;
+
     @Override
     public void start() {
         // Create the window and a camera for the window
@@ -39,6 +41,9 @@ public class Game implements Application {
 
         world = new World(new WorldGeneratorFlat(),10, 10, 10);
         player = new Player(camera, world, new Vector3(5.5f, 7, 5.5f));
+
+        world.set(5, 4, 4, "/cobblestone.png", "/cobblestone.png");
+        testBlock = world.getBlock(5, 4, 4);
     }
 
     @Override
@@ -65,6 +70,8 @@ public class Game implements Application {
 
             // Update the window with everything we have done so far
             window.update();
+
+            System.out.println(player.lookingAtBlock(testBlock));
         }
     }
 

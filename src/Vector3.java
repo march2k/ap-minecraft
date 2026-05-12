@@ -61,16 +61,7 @@ public class Vector3 {
     }
 
     public boolean equals(Vector3 other) {
-        if(x != other.x) {
-            return false;
-        }
-        if(y != other.y) {
-            return false;
-        }
-        if(z != other.z) {
-            return false;
-        }
-        return true;
+        return x == other.x && y == other.y && z == other.z;
     }
 
     @Override

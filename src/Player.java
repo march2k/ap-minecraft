@@ -174,6 +174,11 @@ public class Player {
         return bodies;
     }
 
+    public boolean lookingAtBlock(Block block) {
+        RayIntersect intersect = new Ray(getEyePos(), camera.getDirection()).intersects(block.createBody());
+        return intersect.close <= intersect.far;
+    }
+
     private void updateBody() {
         // Update the player's CollisionBody to match its current position. I suppose this method
         // would also account for size changing... but that's not going to happen.
@@ -181,6 +186,10 @@ public class Player {
         float halfDepth = size.z / 2;
         body.min = new Vector3(position.x - halfWidth, position.y, position.z - halfDepth);
         body.max = new Vector3(position.x + halfWidth, position.y + size.y, position.z + halfDepth);
+    }
+
+    private Vector3 getEyePos() {
+        return new Vector3(position).add(new Vector3(0, eyePos, 0));
     }
 
     public void accelerate(Vector3 direction) {

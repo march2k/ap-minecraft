@@ -32,7 +32,7 @@ public class Window {
 
         // create a fullscreen window
         long monitor = glfwGetPrimaryMonitor();
-        handle = glfwCreateWindow(w, h, "cccc", monitor, 0L);
+        handle = glfwCreateWindow(w, h, "cccc", 0L, 0L);
 
         // use this window as the opengl context
         glfwMakeContextCurrent(handle);
