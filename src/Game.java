@@ -71,7 +71,7 @@ public class Game implements Application {
             // Update the window with everything we have done so far
             window.update();
 
-            System.out.println(player.lookingAtBlock(testBlock));
+            System.out.println(player.getPickedBlock());
         }
     }
 

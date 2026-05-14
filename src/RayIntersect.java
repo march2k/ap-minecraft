@@ -6,4 +6,8 @@ public class RayIntersect {
         pClose = new Vector3();
         pFar = new Vector3();
     }
+
+    public String toString() {
+        return "pclose: " + pClose + " # pfar: " + pFar + " # close: " + close + " # far: " + far;
+    }
 }

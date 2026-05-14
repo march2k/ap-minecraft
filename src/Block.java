@@ -117,4 +117,7 @@ public class Block {
     public Vector3 getPosition() {
         return position;
     }
+    public String toString() {
+        return "Block @ " + position.toString();
+    }
 }

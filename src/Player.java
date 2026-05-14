@@ -15,6 +15,11 @@ public class Player {
     private CollisionBody body;
     private Vector3 size;
 
+    // Picked block (the block we are looking at)
+    private static final float reach = 3.0f;
+    private Vector3 hitPos;
+    private Block picked;
+
     // Constants used in collision detection and adjustments
     private static final float buffer = 0.01f;
     private static final float pixel = 0.001f;
@@ -34,6 +39,7 @@ public class Player {
 
         position = new Vector3(initialPosition);
         velocity = new Vector3();
+        hitPos = new Vector3();
 
         // Set the size of the player's collision box
         size = new Vector3(0.75f, 1.9f, 0.75f);
@@ -47,11 +53,22 @@ public class Player {
         // Place the camera at the player's eye
         camera.setPosition(new Vector3(position.x, position.y + eyePos, position.z));
 
+        // Get a list of all blocks relevant to the player, for example the blocks
+        // above, below, in front of us should be in this list, because it is
+        // possible that we may collide or interact with them this frame.
+        ArrayList<Block> blocks = getBlocks();
+
         // create a CollisionBody to use for collisions
         updateBody();
 
         // Try to move and collide
-        move();
+        move(blocks);
+
+        // Check and assign if we are on the ground or not
+        onGround = checkOnGround(blocks);
+
+        // Check the picked block
+        picked = pickBlock(blocks);
 
         // Apply gravity if we are in the air
         if(!onGround) {
@@ -63,15 +80,18 @@ public class Player {
         velocity.z *= friction;
     }
 
-    private void move() {
-        // Get a list of all blocks relevant to collisions, for example the blocks
-        // above, below, in front of us should be in this list, because it is
-        // possible that we may collide with them this frame.
-        ArrayList<CollisionBody> bodies = getBlockBodies();
-
+    private void move(ArrayList<Block> blocks) {
         // move the player based on their current velocity and update the CollisionBody
         position.y += velocity.y;
         updateBody();
+
+        ArrayList<CollisionBody> bodies = new ArrayList<>();
+        for(Block i: blocks) {
+            if(i == null) {
+                continue;
+            }
+            bodies.add(i.createBody());
+        }
 
         // Check this newly moved collision body against all relevant blocks
         for(CollisionBody b: bodies) {
@@ -130,12 +150,9 @@ public class Player {
                 updateBody();
             }
         }
-
-        // Check and assign if we are on the ground or not
-        onGround = checkOnGround(bodies);
     }
 
-    private boolean checkOnGround(ArrayList<CollisionBody> bodies) {
+    private boolean checkOnGround(ArrayList<Block> blocks) {
         // Make sure the CollisionBody is completely up to date
         updateBody();
 
@@ -145,8 +162,15 @@ public class Player {
 
         // If this tester CollisionBody was in the floor, then we know
         // that we are on the ground, otherwise we are in the air.
-        for(CollisionBody b: bodies) {
-            if(b.intersects(tester)) {
+
+
+        for(Block b: blocks) {
+            if(b == null) {
+                continue;
+            }
+
+            CollisionBody cb = b.createBody();
+            if(cb.intersects(tester)) {
                 return true;
             }
         }
@@ -154,19 +178,21 @@ public class Player {
         return false;
     }
 
-    private ArrayList<CollisionBody> getBlockBodies() {
+    private ArrayList<Block> getBlocks() {
         // Get all the nearby blocks for our player's current block position and
         // return their CollisionBodies in an ArrayList. We need this to make sure
         // that we are checking all the blocks we might expect to block us.
-        ArrayList<CollisionBody> bodies = new ArrayList<>();
+        ArrayList<Block> bodies = new ArrayList<>();
         int x = (int)Math.ceil(position.x);
         int y = (int)Math.ceil(position.y);
         int z = (int)Math.ceil(position.z);
 
-        for(int addX = x - 2; addX <= x + 2; addX++) {
-            for(int addY = y - 1; addY <= y + 2; addY++) {
-                for(int addZ = z - 2; addZ <= z + 2; addZ++) {
-                    bodies.add(world.getBodyForBlock(addX, addY, addZ));
+        int range = 4;
+
+        for(int addX = x - range; addX <= x + range; addX++) {
+            for(int addY = y - range; addY <= y + range; addY++) {
+                for(int addZ = z - range; addZ <= z + range; addZ++) {
+                    bodies.add(world.getBlock(addX, addY, addZ));
                 }
             }
         }
@@ -174,9 +200,36 @@ public class Player {
         return bodies;
     }
 
-    public boolean lookingAtBlock(Block block) {
-        RayIntersect intersect = new Ray(getEyePos(), camera.getDirection()).intersects(block.createBody());
-        return intersect.close <= intersect.far;
+    private Block pickBlock(ArrayList<Block> blocks) {
+        Ray eye = getEyeRay();
+        for(Block b: blocks) {
+            // Do not try to check null blocks
+            if(b == null) {
+                continue;
+            }
+
+            // Get the CollisionBody for the relevant block and get
+            // the RayIntersect information for it
+            CollisionBody cb = b.createBody();
+            RayIntersect inter = eye.intersect(cb);
+
+            // Check if this collision is valid
+            if(inter.close <= inter.far) {
+
+                // Check that this collision of the ray would be within the reach of the player
+                if(inter.close <= reach) {
+                    hitPos = new Vector3(inter.pClose);
+                    return b;
+                }
+            }
+        }
+
+        // Return null in this case since we are not intersecting any with the ray
+        return null;
+    }
+
+    public Ray getEyeRay() {
+        return new Ray(getEyePos(), camera.getDirection());
     }
 
     private void updateBody() {
@@ -192,12 +245,20 @@ public class Player {
         return new Vector3(position).add(new Vector3(0, eyePos, 0));
     }
 
+    public Block getPickedBlock() {
+        return picked;
+    }
+
     public void accelerate(Vector3 direction) {
         velocity.add(direction);
     }
 
     public boolean isOnGround() {
         return onGround;
+    }
+
+    public Vector3 getHitPos() {
+        return hitPos;
     }
 
     public float getGravity() {

@@ -12,8 +12,14 @@ public class Ray {
         this.direction = new Vector3(dir);
     }
 
-    // Implement a ray to AABB collision check using the slab method
-    public RayIntersect intersects(CollisionBody other) {
+    // This method is an implementation of the Slab method. I used wikipedia to find the
+    // necessary equations, and implemented this version of it using my own Vector3 class.
+    // To be honest, I don't completely understand this math... but I do understand what this
+    // method yields and what I can do with it.
+    // pClose = vertex where the ray entered the AABB, pFar = vertex where the ray exited the AABB
+    // close = time along the ray (distance) where it entered the AABB, far = time along the ray
+    // (distance) where it exited the AABB. An intersection is valid when close <= far.
+    public RayIntersect intersect(CollisionBody other) {
         Vector3 vLow = new Vector3();
         Vector3 vHigh = new Vector3();
 
@@ -53,5 +59,10 @@ public class Ray {
         intersect.far = far;
 
         return intersect;
+    }
+
+    public boolean intersects(CollisionBody body) {
+        RayIntersect i = intersect(body);
+        return i.close <= i.far;
     }
 }
